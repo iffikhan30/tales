@@ -22,7 +22,7 @@ export default function CategoriesScreen() {
 
   return (
     <FlatList
-      data={data.talesCategories}
+      data={data?.talesCategories}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <View

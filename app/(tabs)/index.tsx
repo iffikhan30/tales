@@ -5,6 +5,8 @@ import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import CategoriesScreen from '@/graphql/CategoriesScreen';
+import FeaturedCategoriesScreen from '@/graphql/FeaturedCategoriesScreen';
 import { Link } from 'expo-router';
 
 export default function HomeScreen() {
@@ -17,6 +19,8 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+        <FeaturedCategoriesScreen />
+        <CategoriesScreen />
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />

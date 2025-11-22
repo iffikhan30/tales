@@ -1,7 +1,7 @@
 import { ApolloProvider } from "@apollo/client/react";
 import { StatusBar } from 'expo-status-bar';
+import ".././style/global.css";
 import { client } from "../utlis/apollo";
-
 
 import "react-native-reanimated";
 

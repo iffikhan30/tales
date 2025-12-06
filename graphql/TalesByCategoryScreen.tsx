@@ -1,32 +1,82 @@
-import { useRouter } from 'expo-router';
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Clock, Star } from "lucide-react-native";
+import React, { useState } from "react";
 import {
-    ArrowLeft,
-    Clock,
-    Star,
-    User
-} from 'lucide-react-native';
-import React, { useState } from 'react';
-import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import RenderHtml from "react-native-render-html";
 
-const { width } = Dimensions.get('window');
+const GET_SINGLE_CATEGORY = gql`
+  query GetCategory($id: Int!) {
+    talesCategories(id: $id) {
+      id
+      title
+      slug
+      content
+    }
+  }
+`;
 
-// Mock data for category details
-const categoryData = {
-  id: '1',
-  name: 'Fairy Tales',
-  description: 'Embark on magical journeys with enchanting fairy tales that spark imagination and teach valuable lessons. These timeless stories feature brave heroes, clever heroines, and mystical creatures that have captivated children for generations.',
-  taleCount: 24,
-  imageUrl: 'https://images.unsplash.com/photo-1515073838964-4d4d56a58b21?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8U3R1ZGVudCUyMGxlYXJuZXIlMjBwdXBpbCUyMGVkdWNhdGlvbnxlbnwwfHwwfHx8MA%3D%3D'
-};
+const { width } = Dimensions.get("window");
 
 // Mock data for tales in this category
 const mockTales = [
-  { id: '1', title: 'The Brave Little Rabbit', author: 'Emma Thompson', duration: '5 min', rating: 4.8, imageIndex: 0 },
-  { id: '2', title: 'Dragon\'s Treasure Hunt', author: 'Michael Chen', duration: '7 min', rating: 4.9, imageIndex: 1 },
-  { id: '3', title: 'Princess and the Moon', author: 'Sophia Williams', duration: '6 min', rating: 4.7, imageIndex: 2 },
-  { id: '4', title: 'Magic Paintbrush', author: 'James Wilson', duration: '8 min', rating: 4.6, imageIndex: 3 },
-  { id: '5', title: 'The Enchanted Garden', author: 'Olivia Parker', duration: '6 min', rating: 4.9, imageIndex: 4 },
-  { id: '6', title: 'Talking Animals Friends', author: 'Robert Kim', duration: '5 min', rating: 4.5, imageIndex: 5 },
+  {
+    id: "1",
+    title: "The Brave Little Rabbit",
+    author: "Emma Thompson",
+    duration: "5 min",
+    rating: 4.8,
+    imageIndex: 0,
+  },
+  {
+    id: "2",
+    title: "Dragon's Treasure Hunt",
+    author: "Michael Chen",
+    duration: "7 min",
+    rating: 4.9,
+    imageIndex: 1,
+  },
+  {
+    id: "3",
+    title: "Princess and the Moon",
+    author: "Sophia Williams",
+    duration: "6 min",
+    rating: 4.7,
+    imageIndex: 2,
+  },
+  {
+    id: "4",
+    title: "Magic Paintbrush",
+    author: "James Wilson",
+    duration: "8 min",
+    rating: 4.6,
+    imageIndex: 3,
+  },
+  {
+    id: "5",
+    title: "The Enchanted Garden",
+    author: "Olivia Parker",
+    duration: "6 min",
+    rating: 4.9,
+    imageIndex: 4,
+  },
+  {
+    id: "6",
+    title: "Talking Animals Friends",
+    author: "Robert Kim",
+    duration: "5 min",
+    rating: 4.5,
+    imageIndex: 5,
+  },
 ];
 
 // Using images from the fetched images
@@ -36,20 +86,23 @@ const taleImages = [
   "https://images.unsplash.com/photo-1675351085230-ab39b2289ff4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fDMlMjBncmFwaGljc3xlbnwwfHwwfHx8MA%3D%3D",
   "https://images.unsplash.com/photo-1660142107232-e26dd2036dd8?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fDMlMjBncmFwaGljc3xlbnwwfHwwfHx8MA%3D%3D",
   "https://images.unsplash.com/photo-1635099404457-91c3d0dade3b?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8MyUyMGdyYXBoaWNzfGVufDB8fDB8fHww",
-  "https://images.unsplash.com/photo-1629216509258-4dbd7880e605?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDR8fDMlMjBncmFwaGljc3xlbnwwfHwwfHx8MA%3D%3D"
+  "https://images.unsplash.com/photo-1629216509258-4dbd7880e605?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDR8fDMlMjBncmFwaGljc3xlbnwwfHwwfHx8MA%3D%3D",
 ];
 
 // Sorting options
 const sortOptions = [
-  { id: 'newest', label: 'Newest' },
-  { id: 'popular', label: 'Popular' },
-  { id: 'alphabetical', label: 'A-Z' }
+  { id: "newest", label: "Newest" },
+  { id: "popular", label: "Popular" },
+  { id: "alphabetical", label: "A-Z" },
 ];
 
-export default function CategoryDetailScreen() {
+export default function TalesByCategoryScreen() {
+  const { id } = useLocalSearchParams();
+  const categoryId = parseInt(id as string, 10);
   const router = useRouter();
-  const [sortOption, setSortOption] = useState('newest');
-  
+  const [sortOption, setSortOption] = useState("newest");
+  const [expanded, setExpanded] = useState(false);
+
   const handleTalePress = (taleId: string) => {
     // Navigate to tale details screen
     router.push(`/tale/${taleId}`);
@@ -58,58 +111,89 @@ export default function CategoryDetailScreen() {
   // Sort tales based on selected option
   const sortedTales = [...mockTales].sort((a, b) => {
     switch (sortOption) {
-      case 'newest':
+      case "newest":
         return parseInt(b.id) - parseInt(a.id);
-      case 'popular':
+      case "popular":
         return b.rating - a.rating;
-      case 'alphabetical':
+      case "alphabetical":
         return a.title.localeCompare(b.title);
       default:
         return 0;
     }
   });
 
+  const { loading, error, data } = useQuery(GET_SINGLE_CATEGORY, {
+    variables: { id: categoryId },
+  });
+
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error.message}</Text>;
+
+  const categoryData = data?.talesCategories?.[0];
+
   return (
     <View className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="bg-blue-500 pt-12 pb-6 px-4">
-        <View className="flex-row items-center mb-4">
-          <TouchableOpacity 
-            onPress={() => router.back()} 
-            className="bg-white/20 p-2 rounded-full mr-3"
-          >
-            <ArrowLeft color="#FFFFFF" size={24} />
-          </TouchableOpacity>
-          <Text className="text-white text-2xl font-bold flex-1">{categoryData.name}</Text>
-          <TouchableOpacity className="bg-white/20 p-2 rounded-full">
-            <User color="#FFFFFF" size={24} />
-          </TouchableOpacity>
-        </View>
-        
-        {/* Category Image */}
-        <View className="rounded-xl overflow-hidden mb-4">
-          <Image
-            source={{ uri: categoryData.imageUrl }}
-            style={{ width: width - 32, height: 180 }}
-            resizeMode="cover"
-          />
-        </View>
-        
+        {categoryData?.imageUrl && (
+          <View className="rounded-xl overflow-hidden mb-4">
+            {/* Category Image */}
+            <Image
+              source={{ uri: categoryData.imageUrl }}
+              style={{ width: width - 32, height: 180 }}
+              resizeMode="cover"
+            />
+          </View>
+        )}
+
         {/* Category Description */}
-        <Text className="text-white text-base mb-3">
-          {categoryData.description}
+        <Text
+          className="text-white text-base mb-3"
+          numberOfLines={expanded ? undefined : 3}
+        >
+          <RenderHtml
+            contentWidth={width - 32}
+            source={{ html: categoryData.content }}
+            tagsStyles={{
+              p: { color: "white", fontSize: 12, marginBottom: 8 },
+              h1: {
+                color: "white",
+                fontSize: 18,
+                fontWeight: "bold",
+                marginBottom: 10,
+              },
+              h2: {
+                color: "white",
+                fontSize: 16,
+                fontWeight: "bold",
+                marginBottom: 8,
+              },
+              // add more tags styles if needed
+            }}
+          />
         </Text>
-        
+
+        {categoryData.content?.length > 0 && (
+          <Text
+            onPress={() => setExpanded(!expanded)}
+            className="bg-white/20 rounded-full px-4 py-2 mb-4 self-start"
+          >
+            {expanded ? "Show Less" : "Show More"}
+          </Text>
+        )}
+
         <View className="bg-white/20 rounded-full px-4 py-2 self-start">
-          <Text className="text-white font-medium">{categoryData.taleCount} tales</Text>
+          <Text className="text-white font-medium">
+            {categoryData.taleCount} tales
+          </Text>
         </View>
       </View>
 
       <View className="flex-1">
         {/* Sorting Options */}
         <View className="px-4 py-3 bg-white border-b border-gray-200">
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             className="flex-row"
           >
@@ -117,17 +201,13 @@ export default function CategoryDetailScreen() {
               <TouchableOpacity
                 key={option.id}
                 className={`px-4 py-2 rounded-full mr-2 ${
-                  sortOption === option.id 
-                    ? 'bg-amber-400' 
-                    : 'bg-gray-100'
+                  sortOption === option.id ? "bg-amber-400" : "bg-gray-100"
                 }`}
                 onPress={() => setSortOption(option.id)}
               >
-                <Text 
+                <Text
                   className={`font-medium ${
-                    sortOption === option.id 
-                      ? 'text-gray-800' 
-                      : 'text-gray-600'
+                    sortOption === option.id ? "text-gray-800" : "text-gray-600"
                   }`}
                 >
                   {option.label}
@@ -153,19 +233,19 @@ export default function CategoryDetailScreen() {
                     resizeMode="cover"
                   />
                 </View>
-                
+
                 <View className="p-3">
-                  <Text 
-                    className="font-bold text-gray-800 mb-1" 
+                  <Text
+                    className="font-bold text-gray-800 mb-1"
                     numberOfLines={2}
                   >
                     {tale.title}
                   </Text>
-                  
+
                   <Text className="text-gray-500 text-sm mb-2">
                     by {tale.author}
                   </Text>
-                  
+
                   <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center">
                       <Star color="#FFC107" fill="#FFC107" size={14} />
@@ -173,7 +253,7 @@ export default function CategoryDetailScreen() {
                         {tale.rating}
                       </Text>
                     </View>
-                    
+
                     <View className="flex-row items-center">
                       <Clock color="#9CA3AF" size={14} />
                       <Text className="text-gray-600 ml-1 text-sm">

@@ -1,3 +1,4 @@
+import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -8,6 +9,7 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -132,25 +134,16 @@ export default function TalesByCategoryScreen() {
   const categoryData = data?.talesCategories?.[0];
 
   return (
-    <View className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="bg-blue-500 pt-12 pb-6 px-4">
-        {categoryData?.imageUrl && (
-          <View className="rounded-xl overflow-hidden mb-4">
-            {/* Category Image */}
-            <Image
-              source={{ uri: categoryData.imageUrl }}
-              style={{ width: width - 32, height: 180 }}
-              resizeMode="cover"
-            />
-          </View>
-        )}
-
-        {/* Category Description */}
-        <Text
-          className="text-white text-base mb-3"
-          numberOfLines={expanded ? undefined : 3}
-        >
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
+      headerImage={
+        <Image
+          source={require("@/assets/images/partial-react-logo.png")}
+          style={styles.reactLogo}
+        />
+      }
+      headerContent={
+        <View className="text-white text-base mb-3">
           <RenderHtml
             contentWidth={width - 32}
             source={{ html: categoryData.content }}
@@ -171,102 +164,117 @@ export default function TalesByCategoryScreen() {
               // add more tags styles if needed
             }}
           />
-        </Text>
-
-        {categoryData.content?.length > 0 && (
-          <Text
-            onPress={() => setExpanded(!expanded)}
-            className="bg-white/20 rounded-full px-4 py-2 mb-4 self-start"
-          >
-            {expanded ? "Show Less" : "Show More"}
-          </Text>
-        )}
-
+        </View>
+      }
+      headerCount={
         <View className="bg-white/20 rounded-full px-4 py-2 self-start">
           <Text className="text-white font-medium">
             {categoryData.taleCount} tales
           </Text>
         </View>
-      </View>
-
-      <View className="flex-1">
-        {/* Sorting Options */}
-        <View className="px-4 py-3 bg-white border-b border-gray-200">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="flex-row"
-          >
-            {sortOptions.map((option) => (
-              <TouchableOpacity
-                key={option.id}
-                className={`px-4 py-2 rounded-full mr-2 ${
-                  sortOption === option.id ? "bg-amber-400" : "bg-gray-100"
-                }`}
-                onPress={() => setSortOption(option.id)}
-              >
-                <Text
-                  className={`font-medium ${
-                    sortOption === option.id ? "text-gray-800" : "text-gray-600"
+      }
+    >
+      <View className="flex-1 bg-gray-50">
+        <View className="flex-1">
+          {/* Sorting Options */}
+          <View className="px-4 py-3 bg-white border-b border-gray-200">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="flex-row"
+            >
+              {sortOptions.map((option) => (
+                <TouchableOpacity
+                  key={option.id}
+                  className={`px-4 py-2 rounded-full mr-2 ${
+                    sortOption === option.id ? "bg-amber-400" : "bg-gray-100"
                   }`}
+                  onPress={() => setSortOption(option.id)}
                 >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Tales Grid */}
-        <ScrollView className="flex-1 px-4 py-4">
-          <View className="flex-row flex-wrap gap-4">
-            {sortedTales.map((tale) => (
-              <TouchableOpacity
-                key={tale.id}
-                className="basis-[42%] bg-white rounded-xl overflow-hidden shadow-sm"
-                onPress={() => handleTalePress(tale.id)}
-              >
-                <View className="mb-3">
-                  <Image
-                    source={{ uri: taleImages[tale.imageIndex] }}
-                    style={{ width: (width - 56) / 2, height: 120 }}
-                    resizeMode="cover"
-                  />
-                </View>
-
-                <View className="p-3">
                   <Text
-                    className="font-bold text-gray-800 mb-1"
-                    numberOfLines={2}
+                    className={`font-medium ${
+                      sortOption === option.id
+                        ? "text-gray-800"
+                        : "text-gray-600"
+                    }`}
                   >
-                    {tale.title}
+                    {option.label}
                   </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
 
-                  <Text className="text-gray-500 text-sm mb-2">
-                    by {tale.author}
-                  </Text>
+          {/* Tales Grid */}
+          <ScrollView className="flex-1 px-4 py-4">
+            <View className="flex-row flex-wrap gap-4">
+              {sortedTales.map((tale) => (
+                <TouchableOpacity
+                  key={tale.id}
+                  className="basis-[42%] bg-white rounded-xl overflow-hidden shadow-sm"
+                  onPress={() => handleTalePress(tale.id)}
+                >
+                  <View className="mb-3">
+                    <Image
+                      source={{ uri: taleImages[tale.imageIndex] }}
+                      style={{ width: (width - 56) / 2, height: 120 }}
+                      resizeMode="cover"
+                    />
+                  </View>
 
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                      <Star color="#FFC107" fill="#FFC107" size={14} />
-                      <Text className="text-gray-600 ml-1 text-sm">
-                        {tale.rating}
-                      </Text>
-                    </View>
+                  <View className="p-3">
+                    <Text
+                      className="font-bold text-gray-800 mb-1"
+                      numberOfLines={2}
+                    >
+                      {tale.title}
+                    </Text>
 
-                    <View className="flex-row items-center">
-                      <Clock color="#9CA3AF" size={14} />
-                      <Text className="text-gray-600 ml-1 text-sm">
-                        {tale.duration}
-                      </Text>
+                    <Text className="text-gray-500 text-sm mb-2">
+                      by {tale.author}
+                    </Text>
+
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center">
+                        <Star color="#FFC107" fill="#FFC107" size={14} />
+                        <Text className="text-gray-600 ml-1 text-sm">
+                          {tale.rating}
+                        </Text>
+                      </View>
+
+                      <View className="flex-row items-center">
+                        <Clock color="#9CA3AF" size={14} />
+                        <Text className="text-gray-600 ml-1 text-sm">
+                          {tale.duration}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </ParallaxScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  stepContainer: {
+    gap: 8,
+    marginBottom: 8,
+  },
+  reactLogo: {
+    height: 178,
+    width: 290,
+    bottom: 0,
+    left: 0,
+    position: "absolute",
+  },
+});

@@ -28,7 +28,14 @@ export default function RecentTalesScreen() {
   const router = useRouter();
   const handleTalePress = (taleId: string) => {
     // Navigate to category details screen
-    router.push(`/search/${taleId}`);
+    router.push({
+      pathname: "/tale/[id]",
+      params: {
+        id: taleId,
+        name: "Tale",
+        table_name: "detail",
+      },
+    });
   };
 
   const { loading, error, data } = useQuery(GET_TALES);
@@ -39,7 +46,7 @@ export default function RecentTalesScreen() {
   return (
     <>
       {/* Featured Categories Section */}
-      <View>
+      <View className=" py-6 px-4">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-xl font-bold text-gray-800">Recent Tales</Text>
           <TouchableOpacity>

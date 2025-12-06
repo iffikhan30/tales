@@ -1,11 +1,8 @@
 import { useRouter } from 'expo-router';
 import {
-    ArrowLeft,
-    Bookmark,
-    BookmarkPlus,
-    ChevronRight,
-    Clock,
-    Star
+  ChevronRight,
+  Clock,
+  Star
 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -81,43 +78,6 @@ export default function TaleDetailScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="bg-amber-400 pt-12 pb-4 px-4 shadow-md">
-        <View className="flex-row items-center justify-between">
-          <TouchableOpacity 
-            onPress={() => router.back()} 
-            className="bg-white rounded-full p-2 shadow-sm"
-          >
-            <ArrowLeft size={24} color="#333" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            onPress={toggleBookmark} 
-            className="bg-white rounded-full p-2 shadow-sm"
-          >
-            {isBookmarked ? (
-              <Bookmark size={24} color="#FFC107" fill="#FFC107" />
-            ) : (
-              <BookmarkPlus size={24} color="#333" />
-            )}
-          </TouchableOpacity>
-        </View>
-        
-        <Text className="text-2xl font-bold text-gray-800 mt-4">{taleData.title}</Text>
-        
-        <View className="flex-row items-center mt-2">
-          <View className="flex-row items-center mr-4">
-            <Star size={16} color="#FFC107" fill="#FFC107" />
-            <Text className="ml-1 text-gray-700 font-medium">{taleData.rating}</Text>
-            <Text className="text-gray-500 ml-1">({taleData.totalRatings})</Text>
-          </View>
-          
-          <View className="flex-row items-center">
-            <Clock size={16} color="#666" />
-            <Text className="ml-1 text-gray-700">{taleData.readingTime}</Text>
-          </View>
-        </View>
-      </View>
 
       <ScrollView className="flex-1 px-4 py-4">
         {/* Story Image */}

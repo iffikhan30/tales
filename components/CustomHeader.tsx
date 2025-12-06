@@ -1,8 +1,19 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, User } from "lucide-react-native";
+import {
+  ArrowLeft,
+  Bookmark,
+  BookmarkPlus,
+  User,
+} from "lucide-react-native";
+import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 export default function CustomHeader() {
   const router = useRouter();
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const toggleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+  };
+
   const { id, name, table_name } = useLocalSearchParams();
   let toolbarname = name;
   if (table_name === "category") {
@@ -11,7 +22,7 @@ export default function CustomHeader() {
     toolbarname = "Detail";
   }
   return (
-    <View className="bg-blue-500 pt-16 pb-4 px-4">
+    <View className="bg-blue-500 pt-16 pb-4 px-4 bg-amber-400">
       <View className="flex-row items-center">
         {/* Back Button */}
         <TouchableOpacity
@@ -31,6 +42,16 @@ export default function CustomHeader() {
         >
           <User color="#FFFFFF" size={24} />
         </TouchableOpacity>
+        <TouchableOpacity 
+            onPress={toggleBookmark} 
+            className="bg-white rounded-full p-2 shadow-sm"
+          >
+            {isBookmarked ? (
+              <Bookmark size={24} color="#FFC107" fill="#FFC107" />
+            ) : (
+              <BookmarkPlus size={24} color="#333" />
+            )}
+          </TouchableOpacity>
       </View>
     </View>
   );

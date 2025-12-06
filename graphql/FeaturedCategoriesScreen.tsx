@@ -37,7 +37,7 @@ export default function FeaturedCategoriesScreen() {
   return (
     <>
       {/* Featured Categories Section */}
-      <View className="mb-8">
+      <View className="mb-8 py-6 px-4">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-xl font-bold text-gray-800">
             Featured Categories

@@ -2,7 +2,8 @@
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const GRAPHQL_URL = 'https://www.usemyweb.com/graphql'; // <- replace
+//const GRAPHQL_URL = 'https://www.usemyweb.com/graphql'; // <- replace
+const GRAPHQL_URL = 'http://192.168.0.139:8000/graphql'; //WIFI
 
 // auth middleware
 const authLink = new ApolloLink((operation, forward) => {

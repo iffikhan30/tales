@@ -12,6 +12,11 @@ const GET_CATEGORIES = gql`
       title
       slug
       content
+      media {
+        title
+        alt
+        path
+      }
     }
   }
 `;
@@ -65,7 +70,7 @@ export default function FeaturedCategoriesScreen() {
                 </View>
               </View>
               <Text className="font-bold text-gray-800 mb-1">
-                {category.title}
+                {category.title} - -{category.media ? category.media.title : ''}
               </Text>
               <Text className="text-gray-500 text-sm">
                 {category.taleCount} tales

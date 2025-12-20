@@ -12,6 +12,7 @@ const GET_CATEGORIES = gql`
       title
       slug
       content
+      tales_count
       media {
         title
         alt
@@ -70,10 +71,10 @@ export default function FeaturedCategoriesScreen() {
                 </View>
               </View>
               <Text className="font-bold text-gray-800 mb-1">
-                {category.title} - -{category.media ? category.media.title : ''}
+                {category.title}
               </Text>
               <Text className="text-gray-500 text-sm">
-                {category.taleCount} tales
+                {category.tales_count} tale{category.tales_count > 1 ? 's':''}
               </Text>
             </TouchableOpacity>
           ))}

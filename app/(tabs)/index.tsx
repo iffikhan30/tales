@@ -17,7 +17,6 @@ export default function HomeScreen() {
       }>
         <FeaturedCategoriesScreen />
         <RecentTalesScreen />
-        <RecentTalesScreen />
     </ParallaxScrollView>
   );
 }

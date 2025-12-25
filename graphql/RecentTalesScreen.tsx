@@ -8,11 +8,13 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 const GET_TALES = gql`
   query {
-    talesByCategory(category_id: 1) {
+    tale(limit:4) {
       id
       title
       slug
-      content
+      author
+      views_count
+      read_time_minutes
     }
   }
 `;
@@ -55,7 +57,7 @@ export default function RecentTalesScreen() {
         </View>
 
         <View className="gap-4">
-          {data?.talesByCategory.map((post) => (
+          {data?.tale.map((post) => (
             <TouchableOpacity
             key={post.id}
             className="bg-white rounded-xl p-4 flex-row shadow-sm"
@@ -74,14 +76,13 @@ export default function RecentTalesScreen() {
               </Text>
               
               <View className="flex-row items-center mb-2">
-                <Star color="#FFC107" fill="#FFC107" size={16} />
-                <Text className="text-gray-600 ml-1 mr-3">{post.rating}</Text>
+                {post.rating ? <><Star color="#FFC107" fill="#FFC107" size={16} />
+                <Text className="text-gray-600 ml-1 mr-3">{post.rating}</Text></> : ''}
                 
-                <Clock color="#9CA3AF" size={16} />
-                <Text className="text-gray-600 ml-1">{post.duration}</Text>
+                { post.read_time_minutes ? <><Clock color="#9CA3AF" size={16} /><Text className="text-gray-600 ml-1">{post.read_time_minutes} min</Text></> : ''}
               </View>
               
-              <Text className="text-gray-500 text-sm">by {post.author}</Text>
+              {post.author ? <Text className="text-gray-500 text-sm">by {post.author}</Text> : ''}
             </View>
           </TouchableOpacity>
           ))}

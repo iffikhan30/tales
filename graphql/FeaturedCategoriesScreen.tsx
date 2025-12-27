@@ -43,15 +43,15 @@ export default function FeaturedCategoriesScreen() {
   return (
     <>
       {/* Featured Categories Section */}
-      <View className="mb-8 py-6 px-4">
+      <View className="mb-8 pt-4 px-4">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-xl font-bold text-gray-800">
+          <Text className="text-xl font-bold text-gray-800 dark:text-white">
             Featured Categories
           </Text>
           <TouchableOpacity>
             <Link
               href={"/(tabs)/explore"}
-              className="text-blue-500 font-medium"
+              className="text-blue-500 font-medium dark:text-white"
             >
               See All
             </Link>

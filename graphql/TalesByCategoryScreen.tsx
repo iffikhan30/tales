@@ -1,7 +1,6 @@
-import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Clock, Star } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -14,7 +13,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import RenderHtml from "react-native-render-html";
+import RenderHTML from "react-native-render-html";
+
+const GET_TALES_BY_CATEGORY = gql`
+  query GetTalesByCategory($id: Int!) {
+    talesByCategory(category_id: $id) {
+      id
+      title
+      slug
+      author
+      views_count
+      read_time_minutes
+    }
+  }
+`;
 
 const GET_SINGLE_CATEGORY = gql`
   query GetCategory($id: Int!) {
@@ -23,63 +35,17 @@ const GET_SINGLE_CATEGORY = gql`
       title
       slug
       content
+      tales_count
+      media {
+        title
+        alt
+        path
+      }
     }
   }
 `;
 
 const { width } = Dimensions.get("window");
-
-// Mock data for tales in this category
-const mockTales = [
-  {
-    id: "1",
-    title: "The Brave Little Rabbit",
-    author: "Emma Thompson",
-    duration: "5 min",
-    rating: 4.8,
-    imageIndex: 0,
-  },
-  {
-    id: "2",
-    title: "Dragon's Treasure Hunt",
-    author: "Michael Chen",
-    duration: "7 min",
-    rating: 4.9,
-    imageIndex: 1,
-  },
-  {
-    id: "3",
-    title: "Princess and the Moon",
-    author: "Sophia Williams",
-    duration: "6 min",
-    rating: 4.7,
-    imageIndex: 2,
-  },
-  {
-    id: "4",
-    title: "Magic Paintbrush",
-    author: "James Wilson",
-    duration: "8 min",
-    rating: 4.6,
-    imageIndex: 3,
-  },
-  {
-    id: "5",
-    title: "The Enchanted Garden",
-    author: "Olivia Parker",
-    duration: "6 min",
-    rating: 4.9,
-    imageIndex: 4,
-  },
-  {
-    id: "6",
-    title: "Talking Animals Friends",
-    author: "Robert Kim",
-    duration: "5 min",
-    rating: 4.5,
-    imageIndex: 5,
-  },
-];
 
 // Using images from the fetched images
 const taleImages = [
@@ -98,9 +64,7 @@ const sortOptions = [
   { id: "alphabetical", label: "A-Z" },
 ];
 
-export default function TalesByCategoryScreen() {
-  const { id } = useLocalSearchParams();
-  const categoryId = parseInt(id as string, 10);
+export default function TalesByCategoryScreen({ catId }: { catId: string }) {
   const router = useRouter();
   const [sortOption, setSortOption] = useState("newest");
   const [expanded, setExpanded] = useState(false);
@@ -110,8 +74,28 @@ export default function TalesByCategoryScreen() {
     router.push(`/tale/${taleId}`);
   };
 
+  const {
+    loading: loadingCat,
+    error: errorCat,
+    data: dataCat,
+  } = useQuery(GET_SINGLE_CATEGORY, {
+    variables: { id: catId },
+    skip: Number.isNaN(catId), // safety
+  });
+
+  const { loading, error, data } = useQuery(GET_TALES_BY_CATEGORY, {
+    variables: { id: catId }, // ✅ SAME NAME AS QUERY
+    skip: Number.isNaN(catId),
+  });
+
+  if (loadingCat || loading) return <ActivityIndicator />;
+  if (errorCat) return <Text>Error: {errorCat.message}</Text>;
+  if (error) return <Text>Error: {error.message}</Text>;
+  const categoryData = dataCat?.talesCategories[0];
+
+  const mockTaless = data?.talesByCategory ?? [];
   // Sort tales based on selected option
-  const sortedTales = [...mockTales].sort((a, b) => {
+  const sortedTales = [...mockTaless].sort((a, b) => {
     switch (sortOption) {
       case "newest":
         return parseInt(b.id) - parseInt(a.id);
@@ -124,60 +108,41 @@ export default function TalesByCategoryScreen() {
     }
   });
 
-  const { loading, error, data } = useQuery(GET_SINGLE_CATEGORY, {
-    variables: { id: categoryId },
-  });
-
-  if (loading) return <ActivityIndicator />;
-  if (error) return <Text>Error: {error.message}</Text>;
-
-  const categoryData = data?.talesCategories?.[0];
-
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-      headerContent={
-        <View className="text-white text-base mb-3">
-          <RenderHtml
-            contentWidth={width - 32}
-            source={{ html: categoryData.content }}
-            tagsStyles={{
-              p: { color: "white", fontSize: 12, marginBottom: 8 },
-              h1: {
-                color: "white",
-                fontSize: 18,
-                fontWeight: "bold",
-                marginBottom: 10,
-              },
-              h2: {
-                color: "white",
-                fontSize: 16,
-                fontWeight: "bold",
-                marginBottom: 8,
-              },
-              // add more tags styles if needed
-            }}
-          />
+    <>
+      <View className="bg-blue-500 pt-5 pb-6 px-4">
+        {/* Category Image */}
+        <View className="rounded-xl overflow-hidden mb-4">
+          {categoryData.media != null && categoryData.media ? (
+            <Image
+              source={{ uri: categoryData.media.path }}
+              style={{ width: width - 32, height: 180 }}
+              resizeMode="cover"
+            />
+          ) : (
+            <Image
+              source={require("@/assets/images/partial-react-logo.png")}
+              style={{ width: width - 32, height: 180 }}
+              resizeMode="cover"
+            />
+          )}
         </View>
-      }
-      headerCount={
+
+        {/* Category Description */}
+        <Text className="text-white text-base mb-3">
+          <RenderHTML source={{ html: categoryData.content }}></RenderHTML>
+        </Text>
+
         <View className="bg-white/20 rounded-full px-4 py-2 self-start">
           <Text className="text-white font-medium">
-            {categoryData.taleCount} tales
+            {categoryData.tales_count} tales
           </Text>
         </View>
-      }
-    >
+      </View>
       <View className="flex-1 bg-gray-50">
         <View className="flex-1">
           {/* Sorting Options */}
-          <View className="px-4 py-3 bg-white border-b border-gray-200">
+          {/* <View className="px-4 py-3 bg-white border-b border-gray-200">
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -203,7 +168,7 @@ export default function TalesByCategoryScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          </View>
+          </View> */}
 
           {/* Tales Grid */}
           <ScrollView className="flex-1 px-4 py-4">
@@ -235,17 +200,21 @@ export default function TalesByCategoryScreen() {
                     </Text>
 
                     <View className="flex-row items-center justify-between">
-                      <View className="flex-row items-center">
-                        <Star color="#FFC107" fill="#FFC107" size={14} />
-                        <Text className="text-gray-600 ml-1 text-sm">
-                          {tale.rating}
-                        </Text>
-                      </View>
+                      {tale.rating ? (
+                        <View className="flex-row items-center">
+                          <Star color="#FFC107" fill="#FFC107" size={14} />
+                          <Text className="text-gray-600 ml-1 text-sm">
+                            {tale.rating}
+                          </Text>
+                        </View>
+                      ) : (
+                        ""
+                      )}
 
                       <View className="flex-row items-center">
                         <Clock color="#9CA3AF" size={14} />
                         <Text className="text-gray-600 ml-1 text-sm">
-                          {tale.duration}
+                          {tale.read_time_minutes} min
                         </Text>
                       </View>
                     </View>
@@ -256,7 +225,7 @@ export default function TalesByCategoryScreen() {
           </ScrollView>
         </View>
       </View>
-    </ParallaxScrollView>
+    </>
   );
 }
 
@@ -271,8 +240,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   reactLogo: {
-    height: 178,
-    width: 290,
+    height: "100%",
+    width: "100%",
     bottom: 0,
     left: 0,
     position: "absolute",

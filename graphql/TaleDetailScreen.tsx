@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useRouter } from "expo-router";
-import { ChevronRight, Clock, Star } from "lucide-react-native";
+import { Clock } from "lucide-react-native";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -9,8 +9,7 @@ import {
   Image,
   ScrollView,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import RenderHTML from "react-native-render-html";
 
@@ -26,6 +25,11 @@ const GET_TALE = gql`
       content
       views_count
       read_time_minutes
+      media {
+        title
+        alt
+        path
+      }
     }
   }
 `;
@@ -117,11 +121,19 @@ export default function TaleDetailScreen({ id }) {
       <ScrollView className="flex-1 px-4 py-4">
         {/* Story Image */}
         <View className="rounded-xl overflow-hidden mb-6 shadow-md">
-          <Image
-            source={{ uri: taleData.imageUrl }}
-            style={{ width: width - 32, height: 200 }}
-            className="rounded-xl"
-          />
+          {taleData.media != null && taleData.media ? (
+            <Image
+              source={{ uri: taleData.media.path }}
+              style={{ width: width - 32, height: 180 }}
+              resizeMode="cover"
+            />
+          ) : (
+            <Image
+              source={require("@/assets/images/partial-react-logo.png")}
+              style={{ width: width - 32, height: 180 }}
+              resizeMode="cover"
+            />
+          )}
         </View>
         {/* Author Info */}
         {taleData.author ? (
@@ -193,13 +205,13 @@ export default function TaleDetailScreen({ id }) {
             }}
           />
 
-          <TouchableOpacity className="mt-3">
+          {/* <TouchableOpacity className="mt-3">
             <Text className="text-amber-500 font-medium">Read Full Story</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Related Tales */}
-        <View className="mb-6">
+        {/* <View className="mb-6">
           <Text className="text-xl font-bold text-gray-800 mb-4">
             Related Tales
           </Text>
@@ -245,7 +257,7 @@ export default function TaleDetailScreen({ id }) {
               </TouchableOpacity>
             ))}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

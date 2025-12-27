@@ -1,9 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
-  ArrowLeft,
-  Bookmark,
-  BookmarkPlus,
-  User,
+  ArrowLeft
 } from "lucide-react-native";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -36,13 +33,13 @@ export default function CustomHeader() {
           {toolbarname}
         </Text>
         {/* Profile */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           className="bg-white/20 p-2 rounded-full"
           onPress={() => router.push("/profile")}
         >
           <User color="#FFFFFF" size={24} />
-        </TouchableOpacity>
-        <TouchableOpacity 
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity 
             onPress={toggleBookmark} 
             className="bg-white rounded-full p-2 shadow-sm"
           >
@@ -51,7 +48,7 @@ export default function CustomHeader() {
             ) : (
               <BookmarkPlus size={24} color="#333" />
             )}
-          </TouchableOpacity>
+          </TouchableOpacity> */}
       </View>
     </View>
   );

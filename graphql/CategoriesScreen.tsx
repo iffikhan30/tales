@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { BookOpen } from "lucide-react-native";
 import React from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
@@ -46,16 +46,8 @@ export default function FeaturedCategoriesScreen() {
       <View className="mb-8 py-6 px-4">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-xl font-bold text-gray-800 dark:text-white">
-            Featured Categories
+            Categories
           </Text>
-          <TouchableOpacity>
-            <Link
-              href={"/(tabs)/explore"}
-              className="text-blue-500 font-medium dark:text-white"
-            >
-              See All
-            </Link>
-          </TouchableOpacity>
         </View>
 
         <View className="flex-row flex-wrap gap-4">

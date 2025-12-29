@@ -135,7 +135,12 @@ export default function TalesByCategoryScreen({ catId }: { catId: string }) {
 
         {/* Category Description */}
         <Text className="text-white text-base mb-3">
-          <RenderHTML source={{ html: categoryData.content }}></RenderHTML>
+          <RenderHTML
+            source={{ html: categoryData.content }}
+            tagsStyles={{
+              p: { color: "white" },
+            }}
+          ></RenderHTML>
         </Text>
 
         <View className="bg-white/20 rounded-full px-4 py-2 self-start">
@@ -144,7 +149,7 @@ export default function TalesByCategoryScreen({ catId }: { catId: string }) {
           </Text>
         </View>
       </View>
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-gray-50 pb-10">
         <View className="flex-1">
           {/* Sorting Options */}
           {/* <View className="px-4 py-3 bg-white border-b border-gray-200">

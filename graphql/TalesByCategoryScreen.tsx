@@ -24,6 +24,11 @@ const GET_TALES_BY_CATEGORY = gql`
       author
       views_count
       read_time_minutes
+      media {
+        title
+        alt
+        path
+      }
     }
   }
 `;
@@ -180,11 +185,19 @@ export default function TalesByCategoryScreen({ catId }: { catId: string }) {
                   onPress={() => handleTalePress(tale.id)}
                 >
                   <View className="mb-3">
-                    <Image
-                      source={{ uri: taleImages[tale.imageIndex] }}
-                      style={{ width: (width - 56) / 2, height: 120 }}
-                      resizeMode="cover"
-                    />
+                    {tale.media != null && tale.media ? (
+                      <Image
+                        source={{ uri: tale.media.path }}
+                        style={{ width: (width - 56) / 2, height: 120 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Image
+                        source={require("@/assets/images/partial-react-logo.png")}
+                        style={{ width: (width - 56) / 2, height: 120 }}
+                        resizeMode="cover"
+                      />
+                    )}
                   </View>
 
                   <View className="p-3">

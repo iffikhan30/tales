@@ -1,18 +1,18 @@
 // src/apollo.ts
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  InMemoryCache,
-} from "@apollo/client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-const GRAPHQL_URL = "https://www.usemyweb.com/graphql";
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const isDev = process.env.EXPO_PUBLIC_DEV_MODE === 'false';
+
+const GRAPHQL_URL = isDev 
+  ? process.env.EXPO_PUBLIC_LOCAL 
+  : process.env.EXPO_PUBLIC_LIVE;
 
 // auth middleware
 const authLink = new ApolloLink((operation, forward) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const token = await AsyncStorage.getItem("authToken"); // null if none
+      const token = await AsyncStorage.getItem('authToken'); // null if none
       if (token) {
         operation.setContext(({ headers = {} }: any) => ({
           headers: {
@@ -27,6 +27,7 @@ const authLink = new ApolloLink((operation, forward) => {
     }
   });
 });
+
 
 export const client = new ApolloClient({
   //link: authLink.concat(httpLink),

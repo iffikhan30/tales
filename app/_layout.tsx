@@ -14,7 +14,11 @@ import {
 } from "expo-router/react-navigation";
 
 
+import { LogBox } from 'react-native';
 
+LogBox.ignoreLogs([
+  'SafeAreaView has been deprecated',
+]);
 export const unstable_settings = {
   anchor: '(tabs)',
 };

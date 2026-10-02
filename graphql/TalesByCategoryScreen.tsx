@@ -2,16 +2,16 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useRouter } from "expo-router";
 import { Clock, Star } from "lucide-react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  useWindowDimensions,
+  View
 } from "react-native";
 import RenderHTML from "react-native-render-html";
 
@@ -50,7 +50,8 @@ const GET_SINGLE_CATEGORY = gql`
   }
 `;
 
-const { width } = Dimensions.get("window");
+//const { width } = Dimensions.get("window");
+const { width } = useWindowDimensions();
 
 // Using images from the fetched images
 const taleImages = [
@@ -136,6 +137,7 @@ export default function TalesByCategoryScreen({ catId }: { catId: string }) {
         {/* Category Description */}
         <Text className="text-white text-base mb-3">
           <RenderHTML
+            contentWidth={width - 32}
             source={{ html: categoryData.content }}
             tagsStyles={{
               p: { color: "white" },

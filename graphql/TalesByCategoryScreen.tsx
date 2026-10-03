@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import RenderHTML from "@native-html/render";
 import { useRouter } from "expo-router";
 import { Clock, Star } from "lucide-react-native";
 import { useState } from "react";
@@ -13,7 +14,6 @@ import {
   useWindowDimensions,
   View
 } from "react-native";
-import RenderHTML from "react-native-render-html";
 
 const GET_TALES_BY_CATEGORY = gql`
   query GetTalesByCategory($id: Int!) {
